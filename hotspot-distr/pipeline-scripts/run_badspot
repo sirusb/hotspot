@@ -85,8 +85,10 @@ else
 	badt=$outdir/$proj.badspot.min${mintags}.thresh${thresh}.off$off.bed
 	## Small window
 	echo "$thisscr: generating tile, small window..."
-	awk -v step=$step -v pad=$padsm -v off=$off \
-	    '{ for(i = $2+off; i <= $3; i += step) {left=i-pad; if(left<0) left=0; right=i+pad; if(right>$3) right=$3; print $1"\t"left"\t"right }}' $chroms \
+	## sort $chroms to be chr1 chr10 chr11 .... (in case the user didn't sort in this way)
+	sort-bed $chroms \
+	| awk -v step=$step -v pad=$padsm -v off=$off \
+	    '{ for(i = $2+off; i <= $3; i += step) {left=i-pad; if(left<0) left=0; right=i+pad; if(right>$3) right=$3; print $1"\t"left"\t"right }}' \
             > $tmptsm
 	echo "$thisscr: bedmap & awk, small window..."
 	if [ $bam == "T" ]; then
